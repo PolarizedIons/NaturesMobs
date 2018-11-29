@@ -1,0 +1,16 @@
+[
+{
+  "modid": "naturesmobs",
+  "name": "Nature's Mobs",
+  "description": "Mobs of nature (TODO)",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["PolarizedIons"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
