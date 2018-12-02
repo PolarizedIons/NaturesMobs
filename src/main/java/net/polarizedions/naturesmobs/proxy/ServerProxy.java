@@ -2,6 +2,7 @@ package net.polarizedions.naturesmobs.proxy;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.polarizedions.naturesmobs.blocks.tiles.TileEntityProviderWrapper;
 
 public class ServerProxy implements IProxy {
@@ -15,4 +16,8 @@ public class ServerProxy implements IProxy {
         // NOOP
     }
 
+    @Override
+    public void schedule(Runnable runnable) {
+        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
+    }
 }

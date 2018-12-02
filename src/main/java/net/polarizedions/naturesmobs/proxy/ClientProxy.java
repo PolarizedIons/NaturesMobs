@@ -1,6 +1,7 @@
 package net.polarizedions.naturesmobs.proxy;
 
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
@@ -17,5 +18,10 @@ public class ClientProxy implements IProxy {
     @Override
     public void registerTESR(TileEntityProviderWrapper tesrProvider) {
         ClientRegistry.bindTileEntitySpecialRenderer(tesrProvider.getTileEntityClass(), tesrProvider.createTESR());
+    }
+
+    @Override
+    public void schedule(Runnable runnable) {
+        Minecraft.getMinecraft().addScheduledTask(runnable);
     }
 }

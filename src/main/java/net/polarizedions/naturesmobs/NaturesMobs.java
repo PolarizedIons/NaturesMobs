@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.polarizedions.naturesmobs.blocks.ModBlocks;
 import net.polarizedions.naturesmobs.items.ModItems;
+import net.polarizedions.naturesmobs.net.ModPackets;
 import net.polarizedions.naturesmobs.proxy.IProxy;
 import net.polarizedions.naturesmobs.registry.ModRegistry;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +44,7 @@ public class NaturesMobs {
 
         new ModBlocks();
         new ModItems();
+        ModPackets.init();
 
         ModRegistry.onPreInit(event);
     }

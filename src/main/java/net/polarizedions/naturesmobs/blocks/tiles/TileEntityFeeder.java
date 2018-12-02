@@ -1,30 +1,57 @@
 package net.polarizedions.naturesmobs.blocks.tiles;
 
+import de.ellpeck.naturesaura.api.NaturesAuraAPI;
+import de.ellpeck.naturesaura.api.aura.chunk.IAuraChunk;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.polarizedions.naturesmobs.net.ModPackets;
+import net.polarizedions.naturesmobs.net.PacketFeedAnimalParticle;
 
 import java.util.List;
 
 public class TileEntityFeeder extends TileEntityWrapper implements ITickable {
+    private static final int REQUIRED_AURA = 1000;
+    private static final int AURA_USE_PER_MOB = 100;
+    private static final int AURA_SCAN_RADIUS = 32;
 
     private ItemStackHandlerWrapper inventory = new ItemStackHandlerWrapper(1, this);
 
+
     @Override
     public void update() {
-        if (this.world.getTotalWorldTime() % 80 != 0) {
-            return;
-        }
-
-
-        if (this.world.isRemote || this.world.getTotalWorldTime() % 40 != 0) {
+        int aura = IAuraChunk.getAuraInArea(this.world, this.pos, AURA_SCAN_RADIUS);
+        boolean enoughAura = aura > REQUIRED_AURA ;
+        if (! enoughAura) {
             return;
         }
 
         ItemStack stack = this.inventory.getStackInSlot(0);
         if (stack.isEmpty()) {
+            return;
+        }
+
+        if (this.world.isRemote && this.world.getTotalWorldTime() % 4 == 0) {
+            NaturesAuraAPI.instance().spawnMagicParticle(
+                    this.pos.getX() + 0.5,
+                    this.pos.getY() + 0.7,
+                    this.pos.getZ() + 0.5,
+                    world.rand.nextGaussian() * 0.01,
+                    world.rand.nextGaussian() * 0.05,
+                    world.rand.nextGaussian() * 0.01,
+                    0x48f442,
+                    world.rand.nextFloat() * 2 + 1f,
+                    world.rand.nextInt(80) + 60,
+                    0f,
+                    false,
+                    true
+            );
+        }
+
+        if (world.isRemote || this.world.getTotalWorldTime() % 40 != 0) {
             return;
         }
 
@@ -37,7 +64,8 @@ public class TileEntityFeeder extends TileEntityWrapper implements ITickable {
         this.inventory.setAutoSync(false);
         boolean bred = false;
         for (EntityAnimal animal : mobs) {
-            if (stack.isEmpty()) {
+            enoughAura = aura > REQUIRED_AURA ;
+            if (stack.isEmpty() || ! enoughAura) {
                 break;
             }
 
@@ -49,6 +77,10 @@ public class TileEntityFeeder extends TileEntityWrapper implements ITickable {
                 bred = true;
                 animal.setInLove(null);
                 this.inventory.decreaseSlot(0);
+                aura -= AURA_USE_PER_MOB;
+                BlockPos spot = IAuraChunk.getHighestSpot(this.world, this.pos, AURA_SCAN_RADIUS, this.pos);
+                IAuraChunk.getAuraChunk(this.world, spot).drainAura(spot, AURA_USE_PER_MOB);
+                ModPackets.sendAround(world, pos, 32, new PacketFeedAnimalParticle(animal));
             }
         }
         this.inventory.setAutoSync(true);

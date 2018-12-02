@@ -7,4 +7,5 @@ import net.polarizedions.naturesmobs.blocks.tiles.TileEntityProviderWrapper;
 public interface IProxy {
     void registerItemRenderer(ItemStack stack, ModelResourceLocation location);
     void registerTESR(TileEntityProviderWrapper tesrProvider);
+    void schedule(Runnable runnable);
 }
