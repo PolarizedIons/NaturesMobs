@@ -73,7 +73,8 @@ public class ModRegistry {
     }
 
     public static void onPostInit(FMLPostInitializationEvent event) {
-
+        BLOCKS.clear();
+        ITEMS.clear();
     }
 
     private static void registerBlock(IForgeRegistry<Block> registry, IModBlock modBlock) {
@@ -86,10 +87,6 @@ public class ModRegistry {
 
         if (modBlock.hasItem()) {
             ItemBlock item = modBlock.createItemBlock();
-//            item.setRegistryName(Objects.requireNonNull(block.getRegistryName()));
-//            NaturesMobs.proxy.registerItemRenderer(new ItemStack(item) , new ModelResourceLocation(new ResourceLocation(NaturesMobs.MOD_ID, name), "inventory"));
-//
-//            ForgeRegistries.ITEMS.register(item);
 
             ModRegistry.add(new IModItem() {
                 @Override
