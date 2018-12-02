@@ -15,6 +15,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.polarizedions.naturesmobs.blocks.tiles.TileEntityFeeder;
 import net.polarizedions.naturesmobs.blocks.tiles.TileEntityProviderWrapper;
 import net.polarizedions.naturesmobs.blocks.tiles.render.RenderFeeder;
@@ -110,11 +112,13 @@ public class BlockFeeder extends TileEntityProviderWrapper {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean hasTESR() {
         return true;
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public TileEntitySpecialRenderer createTESR() {
         return new RenderFeeder();
     }

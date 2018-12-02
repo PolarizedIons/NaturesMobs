@@ -10,6 +10,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.polarizedions.naturesmobs.blocks.BlockWrapper;
 import net.polarizedions.naturesmobs.registry.ITileEntityProvider;
 
@@ -28,10 +30,12 @@ public abstract class TileEntityProviderWrapper extends BlockWrapper implements 
 
     public abstract TileEntity createNewTileEntity(World world, int meta);
 
+    @SideOnly(Side.CLIENT)
     public boolean hasTESR() {
         return false;
     }
 
+    @SideOnly(Side.CLIENT)
     public TileEntitySpecialRenderer createTESR() {
         return null;
     }

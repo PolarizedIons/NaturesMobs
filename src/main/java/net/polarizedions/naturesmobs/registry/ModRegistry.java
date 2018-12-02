@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.polarizedions.naturesmobs.NaturesMobs;
 import net.polarizedions.naturesmobs.blocks.tiles.TileEntityProviderWrapper;
@@ -64,7 +65,7 @@ public class ModRegistry {
 
     public static void onInit(FMLInitializationEvent event) {
         for (IModBlock content : BLOCKS) {
-            if (content instanceof TileEntityProviderWrapper && ((TileEntityProviderWrapper) content).hasTESR()) {
+            if (event.getSide() == Side.CLIENT && content instanceof TileEntityProviderWrapper && ((TileEntityProviderWrapper) content).hasTESR()) {
                 NaturesMobs.logger.info("Registering TESR for {}", ((Block) content).getRegistryName());
                 NaturesMobs.proxy.registerTESR((TileEntityProviderWrapper)content);
             }
