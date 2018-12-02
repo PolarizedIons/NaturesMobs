@@ -1,15 +1,13 @@
 package net.polarizedions.naturesmobs.blocks;
 
-import de.ellpeck.naturesaura.Helper;
-import de.ellpeck.naturesaura.NaturesAura;
-import de.ellpeck.naturesaura.blocks.BlockContainerImpl;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -17,25 +15,22 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.polarizedions.naturesmobs.NaturesMobs;
 import net.polarizedions.naturesmobs.blocks.tiles.TileEntityFeeder;
+import net.polarizedions.naturesmobs.blocks.tiles.TileEntityProviderWrapper;
+import net.polarizedions.naturesmobs.blocks.tiles.render.RenderFeeder;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockFeeder extends BlockContainerImpl {
+public class BlockFeeder extends TileEntityProviderWrapper {
     private static final AxisAlignedBB AABB_FULL_BLOCK = new AxisAlignedBB(0, 0, 0, 1, 11/16D, 1);
     private static final AxisAlignedBB AABB_FEEDER = new AxisAlignedBB(0, 0, 0, 1, 7/16D, 1);
     private static final AxisAlignedBB AABB_POLE = new AxisAlignedBB(6/16D, 1/16D, 6/16D, 10/16D, 11/16D, 10/16D);
 
     public BlockFeeder() {
-//        super("feeder", Material.WOOD);
-        super(Material.WOOD, "feeder", TileEntityFeeder.class, "feeder");
+        super("feeder", Material.WOOD, TileEntityFeeder.class);
 
         this.setHardness(3F);
-        this.setCreativeTab(NaturesAura.CREATIVE_TAB);
-        this.setTranslationKey("feeder");
-        this.setRegistryName("feeder");
     }
 
     @Override
@@ -70,29 +65,67 @@ public class BlockFeeder extends BlockContainerImpl {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        return Helper.putStackOnTile(playerIn, hand, pos, 0, true);
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+
+        TileEntityFeeder feeder = (TileEntityFeeder) world.getTileEntity(pos);
+        ItemStack currInventory = feeder.getInventory().getStackInSlot(0);
+        ItemStack playerStack = player.getHeldItem(hand).copy();
+
+        // Extract
+        if (playerStack.isEmpty() || (! currInventory.isEmpty() && !currInventory.isItemEqual(playerStack))) {
+            feeder.getInventory().setStackInSlot(0, ItemStack.EMPTY);
+            if (playerStack.isEmpty()) {
+                player.setHeldItem(hand, currInventory);
+            }
+            else if (! player.inventory.addItemStackToInventory(currInventory)) {
+                BlockPos spawnPos = pos.offset(facing);
+                if (world.isRemote) {
+                    world.spawnEntity(new EntityItem(world, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), currInventory));
+                }
+            }
+        }
+        // Insert (dick joke here)
+        else {
+            ItemStack remain = feeder.getInventory().insertItem(0, playerStack, false);
+            if (!player.isCreative()) {
+                player.setHeldItem(hand, remain);
+            }
+        }
+        return true;
     }
 
-    @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
+    public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World world, BlockPos pos) {
+        BlockPos down = pos.down();
+        if (! world.getBlockState(down).isSideSolid(world, down, EnumFacing.UP)) {
+            return false;
+        }
+
+        return super.canPlaceBlockAt(world, pos);
+    }
+
+    @Override
+    public boolean hasTESR() {
+        return true;
+    }
+
+    @Override
+    public TileEntitySpecialRenderer createTESR() {
+        return new RenderFeeder();
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World world, int meta) {
         return new TileEntityFeeder();
     }
 
-    public void registerItemModel(Item itemBlock) {
-        NaturesMobs.proxy.registerItemRenderer(itemBlock, 0, "feeder");
-    }
-
-    public Item createItemBlock() {
-        return new ItemBlock(this).setRegistryName(this.getRegistryName());
-    }
-
     @Override
-    public BlockFeeder setCreativeTab(CreativeTabs tab) {
-        super.setCreativeTab(tab);
-        return this;
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
-
-
 }

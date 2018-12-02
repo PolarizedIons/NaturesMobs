@@ -1,15 +1,18 @@
 package net.polarizedions.naturesmobs.proxy;
 
-import net.minecraft.item.Item;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.ItemStack;
+import net.polarizedions.naturesmobs.blocks.tiles.TileEntityProviderWrapper;
 
 public class ServerProxy implements IProxy {
     @Override
-    public void registerItemRenderer(Item item, int meta, String id) {
+    public void registerItemRenderer(ItemStack stack, ModelResourceLocation location) {
         // NOOP
     }
 
     @Override
-    public void registerTESRs() {
+    public void registerTESR(TileEntityProviderWrapper tesrProvider) {
         // NOOP
     }
+
 }

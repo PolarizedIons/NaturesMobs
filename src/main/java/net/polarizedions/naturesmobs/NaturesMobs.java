@@ -1,18 +1,18 @@
 package net.polarizedions.naturesmobs;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.polarizedions.naturesmobs.blocks.ModBlocks;
 import net.polarizedions.naturesmobs.items.ModItems;
 import net.polarizedions.naturesmobs.proxy.IProxy;
+import net.polarizedions.naturesmobs.registry.ModRegistry;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NaturesMobs.MOD_ID, name = NaturesMobs.MOD_NAME, version = NaturesMobs.VERSION, dependencies = NaturesMobs.DEPS)
@@ -28,43 +28,32 @@ public class NaturesMobs {
     @SidedProxy(serverSide = "net.polarizedions.naturesmobs.proxy.ServerProxy", clientSide = "net.polarizedions.naturesmobs.proxy.ClientProxy")
     public static IProxy proxy;
 
-    public static Logger logger;
+    public static Logger logger = LogManager.getLogger(NaturesMobs.MOD_NAME);
+
+    public static final CreativeTabs CREATIVE_TAB = new CreativeTabs(MOD_ID) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(Blocks.RED_FLOWER);
+        }
+    };
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
         logger.info("{} is loading...", MOD_NAME);
 
-        proxy.registerTESRs();
+        new ModBlocks();
+        new ModItems();
+
+        ModRegistry.onPreInit(event);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-
+        ModRegistry.onInit(event);
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-
-    }
-
-    @Mod.EventBusSubscriber
-    public static class RegistrationHandler {
-        @SubscribeEvent
-        public static void registerItems(RegistryEvent.Register<Item> event) {
-            ModItems.register(event.getRegistry());
-            ModBlocks.registerItemBlocks(event.getRegistry());
-        }
-
-        @SubscribeEvent
-        public static void registerModels(ModelRegistryEvent event) {
-            ModItems.registerModels();
-            ModBlocks.registerModels();
-        }
-
-        @SubscribeEvent
-        public static void registerBlocks(RegistryEvent.Register<Block> event) {
-            ModBlocks.register(event.getRegistry());
-        }
+        ModRegistry.onPostInit(event);
     }
 }
