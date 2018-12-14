@@ -14,31 +14,50 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.polarizedions.naturesmobs.NaturesMobs;
 
-public class PacketFeedAnimalParticle implements IMessage {
+public class PacketEnityParticle implements IMessage {
     private int entityId;
+    private ParticleType type;
 
-    public PacketFeedAnimalParticle() {
+    public PacketEnityParticle() {
         this.entityId = -1;
+        this.type = null;
     }
 
-    public PacketFeedAnimalParticle(EntityAnimal animal) {
+    public PacketEnityParticle(EntityAnimal animal, ParticleType type) {
         this.entityId = animal.getEntityId();
+        this.type = type;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         this.entityId = buf.readInt();
+        this.type = ParticleType.fromIndex(buf.readInt());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(this.entityId);
+        buf.writeInt(this.type.ordinal());
     }
 
-    public static class Handler implements IMessageHandler<PacketFeedAnimalParticle, IMessage> {
+    public enum ParticleType {
+        FEEDER,
+        CREEPER_REPELLENT;
+
+        // Copied from superaxander <3
+        public static ParticleType fromIndex(int index) {
+            if (index < 0 || index >= values().length) {
+                NaturesMobs.logger.error("Received invalid particle index: {}", index);
+                return values()[0];
+            }
+            return values()[index];
+        }
+    }
+
+    public static class Handler implements IMessageHandler<PacketEnityParticle, IMessage> {
         @Override
         @SideOnly(Side.CLIENT)
-        public IMessage onMessage(PacketFeedAnimalParticle message, MessageContext ctx) {
+        public IMessage onMessage(PacketEnityParticle message, MessageContext ctx) {
             NaturesMobs.proxy.schedule(() -> {
                 World world = Minecraft.getMinecraft().world;
                 if (world != null) {
@@ -50,6 +69,7 @@ public class PacketFeedAnimalParticle implements IMessage {
                         float posZ = pos.getZ() + entity.width / 2;
 
                         for (int i = world.rand.nextInt(5) + 5; i >= 0; i--) {
+                            // TODO: use type to render different types
                             NaturesAuraAPI.instance().spawnMagicParticle(
                                     posX+ world.rand.nextFloat(),
                                     posY + world.rand.nextFloat() * 0.5F,

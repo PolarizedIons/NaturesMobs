@@ -22,6 +22,7 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void schedule(Runnable runnable) {
+        System.out.println("sheduled client runnable");
         Minecraft.getMinecraft().addScheduledTask(runnable);
     }
 }

@@ -13,7 +13,7 @@ public class ModPackets {
 
     public static void init() {
         network = new SimpleNetworkWrapper(NaturesMobs.MOD_ID);
-        network.registerMessage(PacketFeedAnimalParticle.Handler.class, PacketFeedAnimalParticle.class, 0, Side.CLIENT);
+        network.registerMessage(PacketEnityParticle.Handler.class, PacketEnityParticle.class, 0, Side.CLIENT);
     }
 
     public static void sendAround(World world, BlockPos pos, int range, IMessage message) {

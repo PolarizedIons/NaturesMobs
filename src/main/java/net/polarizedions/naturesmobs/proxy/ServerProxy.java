@@ -18,6 +18,7 @@ public class ServerProxy implements IProxy {
 
     @Override
     public void schedule(Runnable runnable) {
+        System.out.println("sheduled server runnable");
         FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
     }
 }

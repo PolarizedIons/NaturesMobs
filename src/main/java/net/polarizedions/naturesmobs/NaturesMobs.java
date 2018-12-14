@@ -3,6 +3,7 @@ package net.polarizedions.naturesmobs;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -45,6 +46,7 @@ public class NaturesMobs {
         new ModBlocks();
         new ModItems();
         ModPackets.init();
+        MinecraftForge.EVENT_BUS.register(this);
 
         ModRegistry.onPreInit(event);
     }
@@ -53,6 +55,52 @@ public class NaturesMobs {
     public void init(FMLInitializationEvent event) {
         ModRegistry.onInit(event);
     }
+
+//    @SubscribeEvent()
+//    public void entityConstruct(EntityEvent.EntityConstructing e) {
+//        if (e.getEntity() instanceof EntityCreeper) {
+////            if (e.entity.getExtendedProperties(PROP_NAME) == null) {
+////                e.entity.registerExtendedProperties(PROP_NAME, new ExampleEntityProperty());
+////            }
+//            proxy.schedule(() -> {
+//                if (((EntityCreeper) e.getEntity()).tasks == null) {
+//                    return;
+//                }
+//                System.out.println("ADDING AI TASK TO CREEPER!!!");
+//                System.out.println(e.getEntity());
+//                System.out.println(((EntityCreeper) e.getEntity()).tasks);
+//                System.out.println(ModItems.CREEPER_PENDANT);
+//            ((EntityCreeper) e.getEntity()).tasks.addTask(3, new EntityAIAvoidPlayerWithItem((EntityCreature) e.getEntity(), 15, 1.0D, 1.5D, ModItems.CREEPER_PENDANT));
+//            EntityAIBase attackRemove = null;
+//            EntityAIBase explodeRemove = null;
+//
+//            for (EntityAITasks.EntityAITaskEntry task : ((EntityCreeper) e.getEntity()).tasks.taskEntries) {
+//                if (task.action.getClass() == EntityAICreeperSwell.class) {
+//                    explodeRemove = task.action;
+//                }
+//            }
+//
+//            for (EntityAITasks.EntityAITaskEntry task : ((EntityCreeper) e.getEntity()).targetTasks.taskEntries) {
+////                System.out.println("Task: " + task.getClass() + " " + task.action.getClass());
+//                if (task.action.getClass() == EntityAINearestAttackableTarget.class) {
+//                    attackRemove = task.action;
+//                }
+//            }
+//                System.out.println("REMOVING TASKS " + attackRemove + " " + explodeRemove);
+//            if (attackRemove != null) {
+//                System.out.println("replaced target ai");
+//                ((EntityCreeper) e.getEntity()).tasks.removeTask(attackRemove);
+//                ((EntityCreeper) e.getEntity()).targetTasks.addTask(4, new EntityAINearestAttackableTargetIgnoringHeldItem((EntityCreature) e.getEntity(), EntityPlayer.class, true, ModItems.CREEPER_PENDANT));
+//            }
+//            if (explodeRemove != null) {
+//                System.out.println("replaced explode ai");
+//                ((EntityCreeper) e.getEntity()).tasks.removeTask(explodeRemove);
+//                ((EntityCreeper) e.getEntity()).tasks.addTask(2, new EntityAICreeperSwellExceptPlayerWithItem((EntityCreeper) e.getEntity(), ModItems.CREEPER_PENDANT));
+//            }
+//
+//            });
+//        }
+//    }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {

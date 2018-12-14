@@ -9,7 +9,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.polarizedions.naturesmobs.net.ModPackets;
-import net.polarizedions.naturesmobs.net.PacketFeedAnimalParticle;
+import net.polarizedions.naturesmobs.net.PacketEnityParticle;
 
 import java.util.List;
 
@@ -80,7 +80,7 @@ public class TileEntityFeeder extends TileEntityWrapper implements ITickable {
                 aura -= AURA_USE_PER_MOB;
                 BlockPos spot = IAuraChunk.getHighestSpot(this.world, this.pos, AURA_SCAN_RADIUS, this.pos);
                 IAuraChunk.getAuraChunk(this.world, spot).drainAura(spot, AURA_USE_PER_MOB);
-                ModPackets.sendAround(world, pos, 32, new PacketFeedAnimalParticle(animal));
+                ModPackets.sendAround(world, pos, 32, new PacketEnityParticle(animal, PacketEnityParticle.ParticleType.FEEDER));
             }
         }
         this.inventory.setAutoSync(true);

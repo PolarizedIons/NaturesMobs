@@ -28,7 +28,7 @@ repositories {
 }
 
 minecraft {
-    version = "1.12.2-14.23.5.2784"
+    version = "1.12.2-14.23.5.2795"
     mappings = "snapshot_20180814"
 
     runDir = "run"
